@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets, status, views
 
-#from authentication.models import User
+from authentication.models import User
 #from authentication.permissions import IsAccountOwner
 #from authentication.serializers import UserSerializer
 

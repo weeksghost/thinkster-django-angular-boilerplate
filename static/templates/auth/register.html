@@ -6,17 +6,18 @@
             <form role="form" ng-submit="vm.register()">
               <div class="form-group">
                 <label for="register__email">Email</label>
-                <input type="email" class="form-control" id="register__email" ng-model="vm.email" placeholder="ex. john@notgoogle.com" />
+                <input type="email" class="form-control" id="register__email" ng-model="vm.email" placeholder="Email address" />
               </div>
 
-              <div class="form-group">
+              <div class="form-group hidden">
                 <label for="register__username">Username</label>
-                <input type="text" class="form-control" id="register__username" ng-model="vm.username" placeholder="ex. john" />
+                <!--<input type="text" class="form-control" id="register__username" ng-model="vm.username" placeholder="" />-->
+                <input type="text" class="form-control" id="register__username" ng-model="vm.email" ng-bind="{{ vm.username }}" placeholder="" />
               </div>
 
               <div class="form-group">
                 <label for="register__password">Password</label>
-                <input type="password" class="form-control" id="register__password" ng-model="vm.password" placeholder="ex. thisisnotgoogleplus" />
+                <input type="password" class="form-control" id="register__password" ng-model="vm.password" placeholder="Password" />
               </div>
 
               <div class="form-group">

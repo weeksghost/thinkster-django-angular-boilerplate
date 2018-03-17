@@ -21,32 +21,18 @@
      * @desc The Factory to be returned
      */
     var Authentication = {
-      getToken: getToken,
       getAuthenticatedAccount: getAuthenticatedAccount,
       isAuthenticated: isAuthenticated,
       login: login,
       register: register,
       setAuthenticatedAccount: setAuthenticatedAccount,
-      unauthenticate: unauthenticate
+      unauthenticate: unauthenticate,
+      logout: logout
     };
 
     return Authentication;
 
     ////////////////////
-
-     /**
-     * @name getToken
-     * @desc Return JWT token for user auth
-     * @returns {object|undefined} Token retrived, else `undefined`
-     * @memberOf thinkster.authentication.services.Authentication
-     */
-    function getToken(email, username, password) {
-      return $http.post('/auth/jwt/create/', {
-        email: email,
-        username: username,
-        password: password
-      })
-    }
 
     /**
      * @name getAuthenticatedAccount
@@ -80,18 +66,20 @@
      * @returns {Promise}
      * @memberOf thinkster.authentication.services.Authentication
      */
+
     function login(email, username, password) {
+      var username = email
       return $http.post('/auth/jwt/create/', {
         email: email,
         username: username,
-        password: password,
+        password: password
       }).then(authToken, loginErrorFn);
-      //}).then(loginSuccessFn, loginErrorFn);
 
       function authToken(data) {
-        var token = data.data.token;
+        $cookies.token = data.data.token;
         return $http.get('/auth/me/', {
-          headers: {'Authorization': 'JWT ' + token}
+          token: $cookies.token,
+          headers: {'Authorization': 'JWT ' + $cookies.token}
         }).then(loginSuccessFn, loginErrorFn);
       }
 
@@ -110,10 +98,7 @@
        * @desc Log "data.data.detail" to the console
        */
       function loginErrorFn(data, status, headers, config) {
-
-        debugger;
-
-        console.error(data.data.detail);
+        error(data.statusText);
       }
     }
 
@@ -124,14 +109,16 @@
      * @memberOf thinkster.authentication.services.Authentication
      */
     function logout() {
-      return $http.post('/api/v1/auth/logout/')
-        .then(logoutSuccessFn, logoutErrorFn);
+      return $http.post('/auth/token/destroy/', {
+          headers: {'Authorization': 'JWT ' + $cookies.token}
+      }).then(logoutSuccessFn, logoutErrorFn);
 
       /**
        * @name logoutSuccessFn
        * @desc Unauthenticate and redirect to index with page reload
        */
       function logoutSuccessFn(data, status, headers, config) {
+
         Authentication.unauthenticate();
 
         window.location = '/';
@@ -156,9 +143,7 @@
      * @memberOf thinkster.authentication.services.Authentication
      */
     function register(email, password, username) {
-
-      //debugger;
-
+      var username = email
       return $http.post('/auth/users/create/', {
         username: username,
         password: password,
@@ -188,9 +173,6 @@
      * @memberOf thinkster.authentication.services.Authentication
      */
     function setAuthenticatedAccount(account) {
-
-      debugger;
-
       $cookies.authenticatedAccount = JSON.stringify(account);
     }
 
@@ -202,6 +184,7 @@
      */
     function unauthenticate() {
       delete $cookies.authenticatedAccount;
+      delete $cookies.token;
     }
   }
 })();
